@@ -37,40 +37,38 @@ def test_letter_in_line(tmp_path: pathlib.Path, content, expected):
     main(input=file_path, grep="J", output=out)
     assert out.getvalue() == expected
 
+
 @pytest.mark.parametrize(
     "files_content, grep, expected",
     [
         (
             {
                 "file1.txt": "Nirvana\nPearl Jam\n",
-                "subdir/file2.txt": "Before Nirvana\nAfter Nirvana\n"
+                "subdir/file2.txt": "Before Nirvana\nAfter Nirvana\n",
             },
             "Nirvana",
             [
                 "file1.txt:Nirvana",
                 "subdir/file2.txt:Before Nirvana",
                 "subdir/file2.txt:After Nirvana",
-            ]
+            ],
         ),
         (
-            {
-                "file1.txt": "Nirvana\nRock\n",
-                "subdir/file2.txt": "Nothing here\n"
-            },
+            {"file1.txt": "Nirvana\nRock\n", "subdir/file2.txt": "Nothing here\n"},
             "Nirvana",
             [
                 "file1.txt:Nirvana",
-            ]
+            ],
         ),
         (
             {
                 "file1.txt": "Metallica\nPearl Jam\n",
-                "subdir/file2.txt": "Foo Fighters\n"
+                "subdir/file2.txt": "Foo Fighters\n",
             },
             "Nirvana",
-            []
+            [],
         ),
-    ]
+    ],
 )
 def test_recursive(tmp_path, files_content, grep, expected):
     for file_name, content in files_content.items():
@@ -86,6 +84,7 @@ def test_recursive(tmp_path, files_content, grep, expected):
 
     assert result == expected
 
+
 @pytest.mark.parametrize(
     "files_content, grep, invert, expected",
     [
@@ -100,7 +99,7 @@ def test_recursive(tmp_path, files_content, grep, expected):
             [
                 "file1.txt:Nirvana",
                 "subdir/file2.txt:Before Nirvana",
-            ]
+            ],
         ),
         (
             {
@@ -114,7 +113,7 @@ def test_recursive(tmp_path, files_content, grep, expected):
                 "file1.txt:Rock",
                 "subdir/file2.txt:Rock and Roll",
                 "subdir/deep/file3.txt:Rock forever",
-            ]
+            ],
         ),
         (
             {
@@ -128,9 +127,9 @@ def test_recursive(tmp_path, files_content, grep, expected):
                 "file1.txt:Metallica",
                 "subdir/file2.txt:Heavy Metal",
                 "subdir/deep/file3.txt:Black Metal",
-            ]
+            ],
         ),
-    ]
+    ],
 )
 def test_invert(tmp_path, files_content, grep, invert, expected):
     for file_name, content in files_content.items():
@@ -142,6 +141,9 @@ def test_invert(tmp_path, files_content, grep, invert, expected):
     main(input=tmp_path, grep=grep, recursive=True, invert=invert, output=output)
 
     result = output.getvalue().strip().split("\n") if output.getvalue().strip() else []
-    expected = [f"{str(tmp_path / line.split(':')[0])}:{line.split(':')[1]}" for line in expected]
+    expected = [
+        f"{str(tmp_path / line.split(':')[0])}:{line.split(':')[1]}"
+        for line in expected
+    ]
 
     assert result == expected

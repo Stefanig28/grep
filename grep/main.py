@@ -12,22 +12,23 @@ def main(
     invert: bool = False,
     output: io.StringIO = sys.stdout,
 ) -> None:
-
     if input.is_file():
         lines = input.read_text().splitlines()
 
         if grep == "":
             output.write("\n".join(lines) + "\n")
         else:
-            output.write(f"{"\n".join([line for line in lines if grep in line])}\n")
-        
+            output.write(f"{'\n'.join([line for line in lines if grep in line])}\n")
+
         output.flush()
-        
+
     elif input.is_dir():
         if recursive:
             all_files = [
-                f for f in input.rglob("*")
-                if f.is_file() and not any(part in f.parts for part in ["tests", ".pytest_cache"])
+                f
+                for f in input.rglob("*")
+                if f.is_file()
+                and not any(part in f.parts for part in ["tests", ".pytest_cache"])
             ]
         else:
             all_files = [f for f in input.iterdir() if f.is_file()]
@@ -62,7 +63,9 @@ def _cli() -> None:
     parser.add_argument("filepath", type=Path, nargs="?", default=Path("."))
     parser.add_argument("-g", "--grep", type=str, default="")
     parser.add_argument("-r", "--recursive", action="store_true")
-    parser.add_argument("-v", "--invert", type=str, nargs="*", help="Palabras a excluir")
+    parser.add_argument(
+        "-v", "--invert", type=str, nargs="*", help="Palabras a excluir"
+    )
 
     args = parser.parse_args()
     main(
